@@ -8,59 +8,36 @@ int main()
 {
 	std::cout << "hello ryan\n";
 
-	/* get the colors black and white (see section for details) */
-	unsigned long black,white;
+	Display *display; // A connection to X server
+	int screen_number;
+	Window canvas_window;
+	unsigned long white_pixel;
+	unsigned long black_pixel;
 
-	Display *dis;
-	int screen;
-	Window win;
-	GC gc;
+	display = XOpenDisplay(NULL);    // Connect X server by opening a display
 
-	/* use the information from the environment variable DISPLAY 
-	   to create the X connection:
-	*/	
-	dis=XOpenDisplay((char *)0);
-	if (dis == nullptr)
-	{
-
-		std::cout << "failed to create display\n";
+	if(!display){
+	  std::cerr<<"Unable to connect X server\n";
+	  return 1;
 	}
 
+	screen_number = DefaultScreen(display);
+	white_pixel = WhitePixel(display, screen_number);
+	black_pixel = BlackPixel(display, screen_number);
 
 
-   	screen=DefaultScreen(dis);
-	black=BlackPixel(dis,screen),	/* get color black */
-	white=WhitePixel(dis, screen);  /* get color white */
+	int x=0, y=100, w=300, h=400;
 
-	/* once the display is initialized, create the window.
-	   This window will be have be 200 pixels across and 300 down.
-	   It will have the foreground white and background black
-	*/
-   	win=XCreateSimpleWindow(dis,DefaultRootWindow(dis),0,0,	
-		200, 300, 5, white, black);
+	canvas_window = XCreateSimpleWindow(display,
+	                                    RootWindow(display, screen_number),
+	                                    x,y,  // top left corner
+	                                    w,h,  // width and height
+	                                    2,    // border width
+	                                    black_pixel,
+	                                    white_pixel);
 
-	/* here is where some properties of the window can be set.
-	   The third and fourth items indicate the name which appears
-	   at the top of the window and the name of the minimized window
-	   respectively.
-	*/
-	XSetStandardProperties(dis,win,"My Window","HI!",None,NULL,0,NULL);
+	XMapWindow(display, canvas_window);    // Map canvas window to display
+	XSync(display, False);
 
-	/* this routine determines which types of input are allowed in
-	   the input.  see the appropriate section for details...
-	*/
-	XSelectInput(dis, win, ExposureMask|ButtonPressMask|KeyPressMask);
-
-	/* create the Graphics Context */
-        gc=XCreateGC(dis, win, 0,0);        
-
-	/* here is another routine to set the foreground and background
-	   colors _currently_ in use in the window.
-	*/
-	XSetBackground(dis,gc,white);
-	XSetForeground(dis,gc,black);
-
-	/* clear the window and bring it on top of the other windows */
-	XClearWindow(dis, win);
-	XMapRaised(dis, win);
+	std::cin >> x;   // just so that the program does not end
 }
