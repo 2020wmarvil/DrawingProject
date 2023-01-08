@@ -6,8 +6,13 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-set(sources ${SOURCE_DIR}/main.cpp)
-#set(includes )
+set(sources 
+    ${SOURCE_DIR}/main.cpp
+    ${SOURCE_DIR}/pen.h
+    ${SOURCE_DIR}/pen.cpp
+)
+
+set(includes ${SOURCE_DIR})
 
 add_executable(WacomProject ${sources} ${includes})
 
